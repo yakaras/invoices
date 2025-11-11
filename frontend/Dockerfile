@@ -6,8 +6,9 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies with legacy peer deps to handle TypeScript version mismatch
-RUN npm install --legacy-peer-deps
+# Clean npm cache and install dependencies with legacy peer deps
+RUN npm cache clean --force && \
+    npm install --legacy-peer-deps
 
 # Copy source code
 COPY public ./public
