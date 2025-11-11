@@ -4,7 +4,7 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: invoice_db
+    container_name: invoice_db_prod
     environment:
       POSTGRES_DB: invoices_db
       POSTGRES_USER: postgres
@@ -18,15 +18,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   # Node.js Backend
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: invoice_api
+    container_name: invoice_api_prod
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       PORT: 5000
       DB_HOST: postgres
       DB_PORT: 5432
@@ -42,28 +43,21 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    volumes:
-      - ./backend/src:/app/src
-    command: npm run dev
+    restart: unless-stopped
 
-  # React Frontend (Development - with hot reload)
+  # React Frontend
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
-    container_name: invoice_web
+      dockerfile: Dockerfile
+    container_name: invoice_web_prod
     environment:
-      REACT_APP_API_URL: http://backend:5000/api
-      WATCHPACK_POLLING: 1
+      REACT_APP_API_URL: http://localhost:5000/api
     ports:
-      - "3333:3000"
+      - "3000:3000"
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    stdin_open: true
-    tty: true
+    restart: unless-stopped
 
 volumes:
   postgres_data:

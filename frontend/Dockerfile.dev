@@ -1,0 +1,21 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies with legacy peer deps
+RUN npm cache clean --force && \
+    npm install --legacy-peer-deps
+
+# Copy remaining source code
+COPY public ./public
+COPY src ./src
+COPY tsconfig.json ./
+
+# Expose port
+EXPOSE 3000
+
+# Start development server
+CMD ["npm", "start"]
