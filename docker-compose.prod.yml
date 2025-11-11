@@ -52,9 +52,9 @@ services:
       dockerfile: Dockerfile
     container_name: invoice_web_prod
     environment:
-      REACT_APP_API_URL: http://localhost:5000/api
+      REACT_APP_API_URL: http://backend:5000/api
     ports:
-      - "3000:3000"
+      - "3333:3000"
     depends_on:
       - backend
     restart: unless-stopped
